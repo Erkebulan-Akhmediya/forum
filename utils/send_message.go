@@ -14,6 +14,6 @@ func SendMessage(w http.ResponseWriter, msg string, code int) {
 	w.WriteHeader(code)
 	m := message{Message: msg}
 	if err := json.NewEncoder(w).Encode(m); err != nil {
-		log.Printf("Error sending message: %s", err)
+		log.Println("Error sending message:", err)
 	}
 }
