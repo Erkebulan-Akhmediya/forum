@@ -31,4 +31,5 @@ func (h *signUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		utils.SendMessage(w, "Sign up failed", 500)
 		return
 	}
+	utils.SendMessage(w, "You have successfully sign up!", 201)
 }
