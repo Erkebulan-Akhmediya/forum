@@ -15,3 +15,11 @@ func (r *repo) save(user *User) error {
 	_, err := db.DB.Exec(query, user.Username, user.Password, user.Email)
 	return err
 }
+
+func (r *repo) existsByEmail(email string) (bool, error) {
+	query := "select exists(select id from user where email = ?)"
+	row := db.DB.QueryRow(query, email)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}

@@ -29,6 +29,17 @@ func (h *signUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	exists, err := h.service.ExistsByEmail(dto.Email)
+	if err != nil {
+		log.Println("Error checking if email unique:", err)
+		utils.SendMessage(w, "Failed to check if the email is unique", 500)
+		return
+	}
+	if exists {
+		utils.SendMessage(w, "The email is already in use", 400)
+		return
+	}
+
 	pwdBytes := []byte(dto.Password)
 	// this check is necessary because bcrypt.GenerateFromPassword
 	// does not operate on byte arrays longer that 72
@@ -37,7 +48,7 @@ func (h *signUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pwdBytes, err := bcrypt.GenerateFromPassword(pwdBytes, bcrypt.DefaultCost)
+	pwdBytes, err = bcrypt.GenerateFromPassword(pwdBytes, bcrypt.DefaultCost)
 	if err != nil {
 		log.Println("Error hashing password:", err)
 		utils.SendMessage(w, "Failed to hash password", 500)
