@@ -82,5 +82,9 @@ func (s *service) createSession(userId int) (string, error) {
 		userId:    userId,
 		expiresAt: epxiresAt,
 	}
-	return id, s.sessionRepo.save(ss)
+	return id, s.sessionRepo.save(&ss)
+}
+
+func (s *service) getSessionById(id string) (*session, error) {
+	return s.sessionRepo.getById(id)
 }

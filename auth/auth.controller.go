@@ -1,11 +1,13 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"forum/utils"
 	"log"
 	"net/http"
 	"slices"
+	"time"
 )
 
 type signUpHandler struct {
@@ -74,9 +76,42 @@ func (h *signInHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie := http.Cookie{
-		Name:  "cookie",
+		Name:  "sid",
 		Value: sid,
 	}
 	http.SetCookie(w, &cookie)
 	utils.SendMessage(w, "You have successfully signed in!", 200)
+}
+
+type authMiddleware struct {
+	next    http.Handler
+	service *service
+}
+
+func NewAuthMiddleware(next http.Handler) http.Handler {
+	return &authMiddleware{
+		next:    next,
+		service: newService(),
+	}
+}
+
+func (m *authMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("sid")
+	if err != nil {
+		log.Println("Error in auth middleware:", err)
+		utils.SendMessage(w, "Cookie not found", 401)
+		return
+	}
+	s, err := m.service.getSessionById(cookie.Value)
+	if err != nil {
+		log.Println("Error in auth middleware:", err)
+		utils.SendMessage(w, "Session not found", 401)
+		return
+	}
+	if time.Now().After(s.expiresAt) {
+		utils.SendMessage(w, "Session expired", 401)
+		return
+	}
+	ctx := context.WithValue(r.Context(), "userId", s.userId)
+	m.next.ServeHTTP(w, r.WithContext(ctx))
 }
