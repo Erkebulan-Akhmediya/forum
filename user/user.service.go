@@ -22,3 +22,7 @@ func (s *Service) Create(username, password, email string) error {
 func (s *Service) ExistsByEmail(email string) (bool, error) {
 	return s.repo.existsByEmail(email)
 }
+
+func (s *Service) GetByEmail(email string) (*User, error) {
+	return s.repo.getByEmail(email)
+}

@@ -23,3 +23,11 @@ func (r *repo) existsByEmail(email string) (bool, error) {
 	err := row.Scan(&exists)
 	return exists, err
 }
+
+func (r *repo) getByEmail(email string) (*User, error) {
+	query := "select id, username, password, email from user where email = ?"
+	row := db.DB.QueryRow(query, email)
+	var user User
+	err := row.Scan(&user.Id, &user.Username, &user.Password, &user.Email)
+	return &user, err
+}

@@ -5,3 +5,8 @@ type signUpDto struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
+
+type signInDto struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
