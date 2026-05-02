@@ -74,7 +74,7 @@ func (s *service) validateCredentials(email, password string) (int, error) {
 }
 
 // creates a sesssion and returns its id
-func (s *service) createSession(userId int) (string, error) {
+func (s *service) createSession(userId int) (*session, error) {
 	id := uuid.NewString()
 	epxiresAt := time.Now().Add(time.Hour * 24 * 6)
 	ss := session{
@@ -82,9 +82,13 @@ func (s *service) createSession(userId int) (string, error) {
 		userId:    userId,
 		expiresAt: epxiresAt,
 	}
-	return id, s.sessionRepo.save(&ss)
+	return &ss, s.sessionRepo.save(&ss)
 }
 
 func (s *service) getSessionById(id string) (*session, error) {
 	return s.sessionRepo.getById(id)
+}
+
+func (s *service) getSessionByUserId(userId int) (*session, error) {
+	return s.sessionRepo.getByUserId(userId)
 }

@@ -68,19 +68,35 @@ func (h *signInHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sid, err := h.service.createSession(userId)
+	s, err := h.service.getSessionByUserId(userId)
+	if err != nil {
+		log.Println("Error getting session:", err)
+	} else {
+		sendSidCookie(w, s)
+		utils.SendMessage(w, "You have successfully signed in!", 200)
+		return
+	}
+
+	s, err = h.service.createSession(userId)
 	if err != nil {
 		log.Println("Error creating session:", err)
 		utils.SendMessage(w, "Failed to create session", 500)
 		return
 	}
 
+	sendSidCookie(w, s)
+	utils.SendMessage(w, "You have successfully signed in!", 200)
+}
+
+func sendSidCookie(w http.ResponseWriter, s *session) {
 	cookie := http.Cookie{
-		Name:  "sid",
-		Value: sid,
+		Name:       "sid",
+		Value:      s.id,
+		Path:       "/",
+		Expires:    s.expiresAt,
+		RawExpires: s.expiresAt.String(),
 	}
 	http.SetCookie(w, &cookie)
-	utils.SendMessage(w, "You have successfully signed in!", 200)
 }
 
 type authMiddleware struct {
@@ -88,7 +104,7 @@ type authMiddleware struct {
 	service *service
 }
 
-func NewAuthMiddleware(next http.Handler) http.Handler {
+func NewMiddleware(next http.Handler) http.Handler {
 	return &authMiddleware{
 		next:    next,
 		service: newService(),

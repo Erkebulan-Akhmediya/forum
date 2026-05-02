@@ -21,3 +21,11 @@ func (r *sessionRepo) getById(id string) (*session, error) {
 	err := row.Scan(&s.id, &s.userId, &s.expiresAt)
 	return &s, err
 }
+
+func (r *sessionRepo) getByUserId(userId int) (*session, error) {
+	query := "select id, user_id, expires_at from session where user_id = ?"
+	row := db.DB.QueryRow(query, userId)
+	var s session
+	err := row.Scan(&s.id, &s.userId, &s.expiresAt)
+	return &s, err
+}
