@@ -2,21 +2,19 @@ package auth
 
 import (
 	"encoding/json"
-	"forum/user"
 	"forum/utils"
 	"log"
 	"net/http"
-
-	"golang.org/x/crypto/bcrypt"
+	"slices"
 )
 
 type signUpHandler struct {
-	service *user.Service
+	service *service
 }
 
 func NewSignUpHandler() http.Handler {
 	return &signUpHandler{
-		service: user.NewService(),
+		service: newService(),
 	}
 }
 
@@ -29,35 +27,14 @@ func (h *signUpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := h.service.ExistsByEmail(dto.Email)
+	err := h.service.createUser(dto.Username, dto.Password, dto.Email)
 	if err != nil {
-		log.Println("Error checking if email unique:", err)
-		utils.SendMessage(w, "Failed to check if the email is unique", 500)
-		return
-	}
-	if exists {
-		utils.SendMessage(w, "The email is already in use", 400)
-		return
-	}
-
-	pwdBytes := []byte(dto.Password)
-	// this check is necessary because bcrypt.GenerateFromPassword
-	// does not operate on byte arrays longer that 72
-	if len(pwdBytes) > 72 {
-		utils.SendMessage(w, "Password too long", 400)
-		return
-	}
-
-	pwdBytes, err = bcrypt.GenerateFromPassword(pwdBytes, bcrypt.DefaultCost)
-	if err != nil {
-		log.Println("Error hashing password:", err)
-		utils.SendMessage(w, "Failed to hash password", 500)
-		return
-	}
-
-	if err := h.service.Create(dto.Username, string(pwdBytes), dto.Email); err != nil {
-		log.Println("Error creating new user:", err)
-		utils.SendMessage(w, "Sign up failed", 500)
+		code := 500
+		userErrs := []error{errDuplicateEmail, errPwdTooLong}
+		if slices.Contains(userErrs, err) {
+			code = 400
+		}
+		utils.SendMessage(w, err.Error(), code)
 		return
 	}
 	utils.SendMessage(w, "You have successfully sign up!", 201)
