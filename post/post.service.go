@@ -1,20 +1,33 @@
 package post
 
+import "forum/file"
+
 type service struct {
-	repo *repo
+	repo        *repo
+	fileService *file.Service
 }
 
 func newService() *service {
 	return &service{
-		repo: newRepo(),
+		repo:        newRepo(),
+		fileService: file.NewService(),
 	}
 }
 
-func (s *service) create(title, content string, authorId int) error {
+func (s *service) create(dto *createPostDto) error {
 	p := post{
-		title:    title,
-		content:  content,
-		authorId: authorId,
+		title:    dto.title,
+		content:  dto.content,
+		authorId: dto.authorId,
 	}
-	return s.repo.save(&p)
+	if err := s.repo.save(&p); err != nil {
+		return err
+	}
+	for _, fh := range dto.files {
+		err := s.fileService.UploadPost(fh.Filename, p.id)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

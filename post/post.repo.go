@@ -9,7 +9,10 @@ func newRepo() *repo {
 }
 
 func (r *repo) save(p *post) error {
-	query := "insert into post (title, content, author_id) values (?, ?, ?)"
-	_, err := db.DB.Exec(query, p.title, p.content, p.authorId)
+	query := `insert into post (title, content, author_id) 
+			  values (?, ?, ?)
+			  returning id`
+	row := db.DB.QueryRow(query, p.title, p.content, p.authorId)
+	err := row.Scan(&p.id)
 	return err
 }

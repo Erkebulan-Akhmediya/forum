@@ -28,8 +28,7 @@ func (h *createPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		files:    r.MultipartForm.File["files"],
 		authorId: r.Context().Value("userId").(int),
 	}
-	err := h.service.create(dto.title, dto.content, dto.authorId)
-	if err != nil {
+	if err := h.service.create(&dto); err != nil {
 		log.Println("Error creating post:", err)
 		utils.SendMessage(w, "Failed to create new post", 500)
 		return
