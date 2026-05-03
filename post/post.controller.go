@@ -10,19 +10,19 @@ const (
 	maxMemory = 32 << 20 // 32 MB
 )
 
-type createPostHandler struct {
+type createHandler struct {
 	service *service
 }
 
-func newCreatePostHandler() http.Handler {
-	return &createPostHandler{
+func newCreateHandler() http.Handler {
+	return &createHandler{
 		service: newService(),
 	}
 }
 
-func (h *createPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(maxMemory)
-	dto := createPostDto{
+	dto := createDto{
 		title:    r.FormValue("title"),
 		content:  r.FormValue("content"),
 		files:    r.MultipartForm.File["files"],

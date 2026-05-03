@@ -8,7 +8,7 @@ import (
 
 func RegisterRoutes() {
 	postHandler := utils.MethodHandler{
-		http.MethodPost: auth.NewMiddleware(newCreatePostHandler()),
+		http.MethodPost: auth.NewMiddleware(newCreateHandler()),
 	}
 	http.Handle("/post", postHandler)
 }

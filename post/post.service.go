@@ -14,7 +14,7 @@ func newService() *service {
 	}
 }
 
-func (s *service) create(dto *createPostDto) error {
+func (s *service) create(dto *createDto) error {
 	p := post{
 		title:    dto.title,
 		content:  dto.content,
