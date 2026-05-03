@@ -2,6 +2,7 @@ package main
 
 import (
 	"forum/auth"
+	"forum/comment"
 	"forum/file"
 	"forum/post"
 	"log"
@@ -16,6 +17,7 @@ func main() {
 	auth.RegisterRoutes()
 	post.RegisterRoutes()
 	file.RegisterRoutes()
+	comment.RegisterRoutes()
 	port := os.Getenv("PORT")
 	log.Println("Starting server on port", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
