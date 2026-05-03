@@ -1,6 +1,9 @@
 package post
 
-import "forum/file"
+import (
+	"forum/file"
+	"forum/utils"
+)
 
 type service struct {
 	repo        *repo
@@ -31,6 +34,6 @@ func (s *service) create(dto *createDto) error {
 	return nil
 }
 
-func (s *service) getAll(pageIndex, pageSize int) ([]*post, error) {
-	return s.repo.getAll(pageIndex, pageSize)
+func (s *service) getAll(page *utils.Page) ([]*post, error) {
+	return s.repo.getAll(page.Index, page.Size)
 }

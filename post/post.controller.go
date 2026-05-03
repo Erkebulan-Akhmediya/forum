@@ -5,7 +5,6 @@ import (
 	"forum/utils"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 const (
@@ -49,19 +48,8 @@ func newGetAllHandler() http.Handler {
 }
 
 func (h *getAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	pageSizeStr := r.URL.Query().Get("page_size")
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if err != nil {
-		pageSize = 50
-	}
-
-	pageIndexStr := r.URL.Query().Get("page_index")
-	pageIndex, err := strconv.Atoi(pageIndexStr)
-	if err != nil {
-		pageIndex = 0
-	}
-
-	posts, err := h.service.getAll(pageIndex, pageSize)
+	page := utils.GetPage(r)
+	posts, err := h.service.getAll(page)
 	if err != nil {
 		log.Println("Error getting posts", err)
 		utils.SendMessage(w, "Failed to get posts", 500)
