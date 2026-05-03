@@ -24,8 +24,7 @@ func (s *service) create(dto *createPostDto) error {
 		return err
 	}
 	for _, fh := range dto.files {
-		err := s.fileService.UploadPost(fh.Filename, p.id)
-		if err != nil {
+		if err := s.fileService.UploadPost(p.id, fh); err != nil {
 			return err
 		}
 	}
