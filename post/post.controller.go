@@ -80,8 +80,13 @@ func (h *getAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Author:  authorDto,
 			Title:   p.title,
 			Content: p.content,
+			FileIds: p.fileIds,
 		}
 		dtos = append(dtos, &postDto)
+	}
+
+	if dtos == nil {
+		dtos = make([]*getDto, 0)
 	}
 
 	w.Header().Add("Content-Type", "application/json")

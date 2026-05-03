@@ -13,6 +13,7 @@ type getDto struct {
 	Author  authorDto `json:"author"`
 	Title   string    `json:"title"`
 	Content string    `json:"content"`
+	FileIds []int     `json:"fileIds"`
 }
 
 type authorDto struct {

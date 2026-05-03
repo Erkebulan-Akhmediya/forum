@@ -4,6 +4,7 @@ type post struct {
 	id, authorId   int
 	title, content string
 	author         author
+	fileIds        []int
 }
 
 type author struct {
