@@ -7,3 +7,16 @@ type createDto struct {
 	files          []*multipart.FileHeader
 	authorId       int
 }
+
+type getDto struct {
+	Id      int       `json:"id"`
+	Author  authorDto `json:"author"`
+	Title   string    `json:"title"`
+	Content string    `json:"content"`
+}
+
+type authorDto struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}

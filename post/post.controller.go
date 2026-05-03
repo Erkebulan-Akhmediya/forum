@@ -1,9 +1,11 @@
 package post
 
 import (
+	"encoding/json"
 	"forum/utils"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -34,4 +36,58 @@ func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.SendMessage(w, "Post created successfully!", 201)
+}
+
+type getAllHandler struct {
+	service *service
+}
+
+func newGetAllHandler() http.Handler {
+	return &getAllHandler{
+		service: newService(),
+	}
+}
+
+func (h *getAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	pageSizeStr := r.URL.Query().Get("page_size")
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 50
+	}
+
+	pageIndexStr := r.URL.Query().Get("page_index")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+
+	posts, err := h.service.getAll(pageIndex, pageSize)
+	if err != nil {
+		log.Println("Error getting posts", err)
+		utils.SendMessage(w, "Failed to get posts", 500)
+		return
+	}
+
+	var dtos []*getDto
+	for _, p := range posts {
+		authorDto := authorDto{
+			Id:       p.author.id,
+			Username: p.author.username,
+			Email:    p.author.email,
+		}
+		postDto := getDto{
+			Id:      p.id,
+			Author:  authorDto,
+			Title:   p.title,
+			Content: p.content,
+		}
+		dtos = append(dtos, &postDto)
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(dtos); err != nil {
+		log.Println("Error encoding posts:", err)
+		utils.SendMessage(w, "Failed to send posts", 500)
+		return
+	}
 }

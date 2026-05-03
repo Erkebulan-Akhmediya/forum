@@ -30,3 +30,7 @@ func (s *service) create(dto *createDto) error {
 	}
 	return nil
 }
+
+func (s *service) getAll(pageIndex, pageSize int) ([]*post, error) {
+	return s.repo.getAll(pageIndex, pageSize)
+}
