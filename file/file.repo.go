@@ -19,3 +19,11 @@ func (r *repo) saveComment(file *CommentFile) error {
 	_, err := db.DB.Exec(query, file.Name, file.CommentId)
 	return err
 }
+
+func (r *repo) getById(id int) (*File, error) {
+	query := "select id, name from file where id = ?"
+	row := db.DB.QueryRow(query, id)
+	var f File
+	err := row.Scan(&f.Id, &f.Name)
+	return &f, err
+}

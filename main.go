@@ -2,6 +2,7 @@ package main
 
 import (
 	"forum/auth"
+	"forum/file"
 	"forum/post"
 	"log"
 	"net/http"
@@ -14,6 +15,7 @@ func main() {
 	godotenv.Load()
 	auth.RegisterRoutes()
 	post.RegisterRoutes()
+	file.RegisterRoutes()
 	port := os.Getenv("PORT")
 	log.Println("Starting server on port", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {

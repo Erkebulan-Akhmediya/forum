@@ -53,3 +53,11 @@ func (s *Service) upload(name string, fh *multipart.FileHeader) error {
 	_, err = io.Copy(dstf, srcf)
 	return err
 }
+
+func (s *Service) getById(id int) (*os.File, error) {
+	f, err := s.repo.getById(id)
+	if err != nil {
+		return nil, err
+	}
+	return os.Open("./assets/" + f.Name)
+}
