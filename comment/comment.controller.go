@@ -26,7 +26,7 @@ func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f, _, err := r.FormFile("file")
+	_, fh, err := r.FormFile("file")
 	if err != nil {
 		log.Println("Error reading file:", err)
 		utils.SendMessage(w, "Failed to read file", 400)
@@ -37,9 +37,9 @@ func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		content:  r.FormValue("content"),
 		auhtorId: r.Context().Value("userId").(int),
 		postId:   postId,
-		file:     &f,
+		file:     fh,
 	}
-	if err := h.service.createPost(&dto); err != nil {
+	if err := h.service.createPostComment(&dto); err != nil {
 		log.Println("Error creating post comment:", err)
 		utils.SendMessage(w, "Failed to create post comment", 500)
 		return

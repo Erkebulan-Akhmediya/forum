@@ -31,6 +31,18 @@ func (s *Service) UploadPost(postId int, fh *multipart.FileHeader) error {
 	return s.repo.savePost(&file)
 }
 
+func (s *Service) UploadCommentFile(commentId int, fh *multipart.FileHeader) error {
+	name := s.genUniqueName(fh.Filename)
+	if err := s.upload(name, fh); err != nil {
+		return err
+	}
+	file := CommentFile{
+		File:      File{Name: name},
+		CommentId: commentId,
+	}
+	return s.repo.saveComment(&file)
+}
+
 func (s *Service) genUniqueName(name string) string {
 	li := strings.LastIndex(name, ".")
 	ext := name[li:]

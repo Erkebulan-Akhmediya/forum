@@ -8,7 +8,7 @@ func newRepo() *repo {
 	return &repo{}
 }
 
-func (r *repo) savePost(c *postComment) error {
+func (r *repo) savePostComment(c *postComment) error {
 	query := `insert into comment (content, author_id, post_id) 
 			  values (?, ?, ?)
 			  returning id`

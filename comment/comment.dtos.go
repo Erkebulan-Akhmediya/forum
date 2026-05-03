@@ -6,5 +6,5 @@ type createPostCommentDto struct {
 	content  string
 	auhtorId int
 	postId   int
-	file     *multipart.File
+	file     *multipart.FileHeader
 }

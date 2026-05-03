@@ -1,16 +1,20 @@
 package comment
 
+import "forum/file"
+
 type service struct {
-	repo *repo
+	repo        *repo
+	fileService *file.Service
 }
 
 func newService() *service {
 	return &service{
-		repo: newRepo(),
+		repo:        newRepo(),
+		fileService: file.NewService(),
 	}
 }
 
-func (s *service) createPost(dto *createPostCommentDto) error {
+func (s *service) createPostComment(dto *createPostCommentDto) error {
 	c := postComment{
 		comment: comment{
 			content:  dto.content,
@@ -18,5 +22,8 @@ func (s *service) createPost(dto *createPostCommentDto) error {
 		},
 		postId: dto.postId,
 	}
-	return s.repo.savePost(&c)
+	if err := s.repo.savePostComment(&c); err != nil {
+		return err
+	}
+	return s.fileService.UploadCommentFile(c.id, dto.file)
 }
