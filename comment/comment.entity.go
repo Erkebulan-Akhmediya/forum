@@ -1,5 +1,7 @@
 package comment
 
+import "database/sql"
+
 type postComment struct {
 	comment
 	postId int
@@ -15,6 +17,7 @@ type comment struct {
 	content  string
 	authorId int
 	author   author
+	fileId   sql.NullInt64
 }
 
 type author struct {
