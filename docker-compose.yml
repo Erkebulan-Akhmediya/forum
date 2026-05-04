@@ -1,0 +1,10 @@
+services:
+  forum:
+    build: .
+    ports:
+      - $PORT:$PORT
+    volumes:
+      - ./assets:/app/assets
+      - ./db:/app/db
+    env_file:
+      - .env
