@@ -137,6 +137,15 @@ func (h *replyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		file:      fh,
 	}
 	if err := h.service.createReplyComment(&dto); err != nil {
+		if err == errCheckComment {
+			log.Println("Error check comment existence:", err)
+			utils.SendMessage(w, "Failed to check if comment you are replying to exists", 500)
+			return
+		}
+		if err == errCommentNotFound {
+			utils.SendMessage(w, "Comment you are reply to not found", 404)
+			return
+		}
 		log.Println("Error creating reply comment:", err)
 		utils.SendMessage(w, "Failed to create reply comment", 500)
 		return

@@ -1,9 +1,13 @@
 package comment
 
 import (
+	"errors"
 	"forum/file"
 	"forum/utils"
 )
+
+var errCheckComment = errors.New("Failed to check if comment exists")
+var errCommentNotFound = errors.New("Comment not found")
 
 type service struct {
 	repo        *repo
@@ -32,6 +36,13 @@ func (s *service) createPostComment(dto *createPostCommentDto) error {
 }
 
 func (s *service) createReplyComment(dto *createReplyCommentDto) error {
+	exists, err := s.repo.existsById(dto.commentId)
+	if err != nil {
+		return errCheckComment
+	}
+	if !exists {
+		return errCommentNotFound
+	}
 	c := replyComment{
 		comment: comment{
 			content:  dto.content,

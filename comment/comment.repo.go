@@ -77,3 +77,11 @@ func (r *repo) getAllByPostId(postId int, page *utils.Page) ([]*postComment, err
 	}
 	return comments, nil
 }
+
+func (r *repo) existsById(id int) (bool, error) {
+	query := "select exists(select id from comment where id = ?)"
+	row := db.DB.QueryRow(query, id)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
