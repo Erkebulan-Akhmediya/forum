@@ -53,6 +53,7 @@ func (s *service) createPostComment(dto *createPostCommentDto) error {
 func (s *service) createReplyComment(dto *createReplyCommentDto) error {
 	exists, err := s.repo.existsById(dto.commentId)
 	if err != nil {
+		log.Println("Error check comment existence:", err)
 		return errCheckComment
 	}
 	if !exists {
