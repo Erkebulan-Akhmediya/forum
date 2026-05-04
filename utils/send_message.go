@@ -11,6 +11,7 @@ type message struct {
 }
 
 func SendMessage(w http.ResponseWriter, msg string, code int) {
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
 	m := message{Message: msg}
 	if err := json.NewEncoder(w).Encode(m); err != nil {
