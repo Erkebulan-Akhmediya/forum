@@ -21,6 +21,14 @@ func (r *repo) save(p *post) error {
 	return err
 }
 
+func (r *repo) existsById(id int) (bool, error) {
+	query := "select exists(select id from post where id = ?)"
+	row := db.DB.QueryRow(query, id)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 func (r *repo) getAll(pageIndex, pageSize int) ([]*post, error) {
 	query := `select 
 				p.id, 

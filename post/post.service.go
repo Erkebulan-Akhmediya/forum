@@ -5,19 +5,19 @@ import (
 	"forum/utils"
 )
 
-type service struct {
+type Service struct {
 	repo        *repo
 	fileService *file.Service
 }
 
-func newService() *service {
-	return &service{
+func NewService() *Service {
+	return &Service{
 		repo:        newRepo(),
 		fileService: file.NewService(),
 	}
 }
 
-func (s *service) create(dto *createDto) error {
+func (s *Service) create(dto *createDto) error {
 	p := post{
 		title:    dto.title,
 		content:  dto.content,
@@ -34,6 +34,10 @@ func (s *service) create(dto *createDto) error {
 	return nil
 }
 
-func (s *service) getAll(page *utils.Page) ([]*post, error) {
+func (s *Service) ExistsById(id int) (bool, error) {
+	return s.repo.existsById(id)
+}
+
+func (s *Service) getAll(page *utils.Page) ([]*post, error) {
 	return s.repo.getAll(page.Index, page.Size)
 }

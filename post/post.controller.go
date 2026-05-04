@@ -12,12 +12,12 @@ const (
 )
 
 type createHandler struct {
-	service *service
+	service *Service
 }
 
 func newCreateHandler() http.Handler {
 	return &createHandler{
-		service: newService(),
+		service: NewService(),
 	}
 }
 
@@ -38,12 +38,12 @@ func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type getAllHandler struct {
-	service *service
+	service *Service
 }
 
 func newGetAllHandler() http.Handler {
 	return &getAllHandler{
-		service: newService(),
+		service: NewService(),
 	}
 }
 

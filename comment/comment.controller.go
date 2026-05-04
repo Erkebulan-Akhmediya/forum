@@ -41,6 +41,14 @@ func (h *createHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		file:     fh,
 	}
 	if err := h.service.createPostComment(&dto); err != nil {
+		if err == errCheckPost {
+			utils.SendMessage(w, "Failed to check if post you are replying to exists", 500)
+			return
+		}
+		if err == errPostNotFound {
+			utils.SendMessage(w, "Post you are replying to not found", 404)
+			return
+		}
 		log.Println("Error creating post comment:", err)
 		utils.SendMessage(w, "Failed to create post comment", 500)
 		return
