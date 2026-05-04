@@ -31,6 +31,20 @@ func (s *service) createPostComment(dto *createPostCommentDto) error {
 	return s.fileService.UploadCommentFile(c.id, dto.file)
 }
 
+func (s *service) createReplyComment(dto *createReplyCommentDto) error {
+	c := replyComment{
+		comment: comment{
+			content:  dto.content,
+			authorId: dto.authorId,
+		},
+		commentId: dto.commentId,
+	}
+	if err := s.repo.saveReplyComment(&c); err != nil {
+		return err
+	}
+	return s.fileService.UploadCommentFile(c.id, dto.file)
+}
+
 func (s *service) getAllByPostId(postId int, page *utils.Page) ([]*postComment, error) {
 	return s.repo.getAllByPostId(postId, page)
 }

@@ -103,3 +103,43 @@ func (h *getAllByPostIdHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 }
+
+type replyHandler struct {
+	service *service
+}
+
+func newReplyHandler() http.Handler {
+	return &replyHandler{
+		service: newService(),
+	}
+}
+
+func (h *replyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	commentIdStr := r.PathValue("commentId")
+	commentId, err := strconv.Atoi(commentIdStr)
+	if err != nil {
+		log.Println("Error converting comment id:", err)
+		utils.SendMessage(w, "Invalid comment id", 400)
+		return
+	}
+
+	_, fh, err := r.FormFile("file")
+	if err != nil {
+		log.Println("Error reading form file:", err)
+		utils.SendMessage(w, "Failed to read file", 400)
+		return
+	}
+
+	dto := createReplyCommentDto{
+		content:   r.FormValue("content"),
+		authorId:  r.Context().Value("userId").(int),
+		commentId: commentId,
+		file:      fh,
+	}
+	if err := h.service.createReplyComment(&dto); err != nil {
+		log.Println("Error creating reply comment:", err)
+		utils.SendMessage(w, "Failed to create reply comment", 500)
+		return
+	}
+	utils.SendMessage(w, "Successfully created reply comment", 201)
+}

@@ -20,6 +20,14 @@ func (r *repo) savePostComment(c *postComment) error {
 	return row.Scan(&c.id)
 }
 
+func (r *repo) saveReplyComment(c *replyComment) error {
+	query := `insert into comment (content, author_id, comment_id)
+			  values (?, ?, ?)
+			  returning id`
+	row := db.DB.QueryRow(query, c.content, c.authorId, c.commentId)
+	return row.Scan(&c.id)
+}
+
 func (r *repo) getAllByPostId(postId int, page *utils.Page) ([]*postComment, error) {
 	query := `select c.id, c.content, u.id, u.username, u.email, f.id
 			  from comment c

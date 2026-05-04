@@ -11,6 +11,13 @@ type createPostCommentDto struct {
 	file     *multipart.FileHeader
 }
 
+type createReplyCommentDto struct {
+	content   string
+	authorId  int
+	commentId int
+	file      *multipart.FileHeader
+}
+
 type getPostCommentDto struct {
 	Id      int       `json:"id"`
 	Content string    `json:"content"`
