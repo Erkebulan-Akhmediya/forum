@@ -12,4 +12,9 @@ func RegisterRoutes() {
 		http.MethodPost: auth.NewMiddleware(newCreateHandler()),
 	}
 	http.Handle("/post", postHandler)
+
+	onePostHandler := utils.MethodHandler{
+		http.MethodPost: auth.NewMiddleware(newReactHandler()),
+	}
+	http.Handle("/post/{id}/react", onePostHandler)
 }

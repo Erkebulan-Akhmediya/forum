@@ -2,18 +2,21 @@ package post
 
 import (
 	"forum/file"
+	"forum/reaction"
 	"forum/utils"
 )
 
 type Service struct {
-	repo        *repo
-	fileService *file.Service
+	repo            *repo
+	fileService     *file.Service
+	reactionService *reaction.Service
 }
 
 func NewService() *Service {
 	return &Service{
-		repo:        newRepo(),
-		fileService: file.NewService(),
+		repo:            newRepo(),
+		fileService:     file.NewService(),
+		reactionService: reaction.NewService(),
 	}
 }
 
@@ -40,4 +43,12 @@ func (s *Service) ExistsById(id int) (bool, error) {
 
 func (s *Service) getAll(page *utils.Page) ([]*post, error) {
 	return s.repo.getAll(page.Index, page.Size)
+}
+
+func (s *Service) like(userId, postId int) error {
+	return s.reactionService.LikePost(userId, postId)
+}
+
+func (s *Service) dislike(userId, postId int) error {
+	return s.reactionService.DislikePost(userId, postId)
 }

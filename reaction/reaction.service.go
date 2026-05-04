@@ -5,25 +5,25 @@ const (
 	dislike = "DISLIKE"
 )
 
-type service struct {
+type Service struct {
 	repo *repo
 }
 
-func newService() *service {
-	return &service{
+func NewService() *Service {
+	return &Service{
 		repo: newRepo(),
 	}
 }
 
-func (s *service) LikePost(userId, postId int) error {
+func (s *Service) LikePost(userId, postId int) error {
 	return s.createPostReaction(userId, postId, like)
 }
 
-func (s *service) DislikePost(userId, postId int) error {
+func (s *Service) DislikePost(userId, postId int) error {
 	return s.createPostReaction(userId, postId, dislike)
 }
 
-func (s *service) createPostReaction(userId, postId int, reactionType string) error {
+func (s *Service) createPostReaction(userId, postId int, reactionType string) error {
 	r := postReaction{
 		reaction: reaction{
 			userId:   userId,
@@ -34,15 +34,15 @@ func (s *service) createPostReaction(userId, postId int, reactionType string) er
 	return s.repo.savePostReaction(&r)
 }
 
-func (s *service) LikeComment(userId, postId int) error {
+func (s *Service) LikeComment(userId, postId int) error {
 	return s.createCommentReaction(userId, postId, like)
 }
 
-func (s *service) DislikeComment(userId, postId int) error {
+func (s *Service) DislikeComment(userId, postId int) error {
 	return s.createCommentReaction(userId, postId, dislike)
 }
 
-func (s *service) createCommentReaction(userId, commentId int, reactionType string) error {
+func (s *Service) createCommentReaction(userId, commentId int, reactionType string) error {
 	r := commentReaction{
 		reaction: reaction{
 			userId:   userId,

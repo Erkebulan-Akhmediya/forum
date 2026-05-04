@@ -5,6 +5,8 @@ import (
 	"forum/utils"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -83,4 +85,40 @@ func (h *getAllHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		utils.SendMessage(w, "Failed to send posts", 500)
 		return
 	}
+}
+
+type reactHandler struct {
+	service *Service
+}
+
+func newReactHandler() http.Handler {
+	return &reactHandler{
+		service: NewService(),
+	}
+}
+
+func (h *reactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userId").(int)
+	postIdStr := r.PathValue("id")
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		log.Println("Error converting post id:", err)
+		utils.SendMessage(w, "Invalid post id", 400)
+	}
+	reaction := r.URL.Query().Get("type")
+	reaction = strings.ToLower(reaction)
+	if reaction == "like" {
+		err = h.service.like(userId, postId)
+	} else if reaction == "dislike" {
+		err = h.service.dislike(userId, postId)
+	} else {
+		utils.SendMessage(w, "Invalid reaction type", 400)
+		return
+	}
+	if err != nil {
+		log.Println("Error reacting to post:", err)
+		utils.SendMessage(w, "Failed to react", 500)
+		return
+	}
+	utils.SendMessage(w, "Successfully reacted to post", 200)
 }
