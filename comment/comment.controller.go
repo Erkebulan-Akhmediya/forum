@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type createHandler struct {
@@ -158,4 +159,41 @@ func (h *replyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.SendMessage(w, "Successfully created reply comment", 201)
+}
+
+type reactHandler struct {
+	service *service
+}
+
+func newReactHandler() http.Handler {
+	return &reactHandler{
+		service: newService(),
+	}
+}
+
+func (h *reactHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userId").(int)
+	commentIdStr := r.PathValue("id")
+	commentId, err := strconv.Atoi(commentIdStr)
+	if err != nil {
+		log.Println("Error parsing comment id:", err)
+		utils.SendMessage(w, "Invalid comment id", 400)
+		return
+	}
+	reaction := r.URL.Query().Get("type")
+	reaction = strings.ToLower(reaction)
+	if reaction == "like" {
+		err = h.service.like(userId, commentId)
+	} else if reaction == "dislike" {
+		err = h.service.dislike(userId, commentId)
+	} else {
+		utils.SendMessage(w, "Invalid reaction type", 400)
+		return
+	}
+	if err != nil {
+		log.Println("Error reacting to comment:", err)
+		utils.SendMessage(w, "Failed to react to comment", 500)
+		return
+	}
+	utils.SendMessage(w, "Successfully reacted to comment", 200)
 }

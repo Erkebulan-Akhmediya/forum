@@ -34,12 +34,12 @@ func (s *Service) createPostReaction(userId, postId int, reactionType string) er
 	return s.repo.savePostReaction(&r)
 }
 
-func (s *Service) LikeComment(userId, postId int) error {
-	return s.createCommentReaction(userId, postId, like)
+func (s *Service) LikeComment(userId, commentId int) error {
+	return s.createCommentReaction(userId, commentId, like)
 }
 
-func (s *Service) DislikeComment(userId, postId int) error {
-	return s.createCommentReaction(userId, postId, dislike)
+func (s *Service) DislikeComment(userId, commentId int) error {
+	return s.createCommentReaction(userId, commentId, dislike)
 }
 
 func (s *Service) createCommentReaction(userId, commentId int, reactionType string) error {

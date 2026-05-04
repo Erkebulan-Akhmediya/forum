@@ -17,4 +17,9 @@ func RegisterRoutes() {
 		http.MethodPost: auth.NewMiddleware(newReplyHandler()),
 	}
 	http.Handle("/comment/{commentId}/comment", replyCommentHandler)
+
+	reactHandler := utils.MethodHandler{
+		http.MethodPost: auth.NewMiddleware(newReactHandler()),
+	}
+	http.Handle("/comment/{id}/react", reactHandler)
 }

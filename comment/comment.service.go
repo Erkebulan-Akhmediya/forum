@@ -4,6 +4,7 @@ import (
 	"errors"
 	"forum/file"
 	"forum/post"
+	"forum/reaction"
 	"forum/utils"
 	"log"
 )
@@ -14,16 +15,18 @@ var errCheckComment = errors.New("Failed to check if comment exists")
 var errCommentNotFound = errors.New("Comment not found")
 
 type service struct {
-	repo        *repo
-	fileService *file.Service
-	postService *post.Service
+	repo             *repo
+	fileService      *file.Service
+	postService      *post.Service
+	reactnionService *reaction.Service
 }
 
 func newService() *service {
 	return &service{
-		repo:        newRepo(),
-		fileService: file.NewService(),
-		postService: post.NewService(),
+		repo:             newRepo(),
+		fileService:      file.NewService(),
+		postService:      post.NewService(),
+		reactnionService: reaction.NewService(),
 	}
 }
 
@@ -74,4 +77,12 @@ func (s *service) createReplyComment(dto *createReplyCommentDto) error {
 
 func (s *service) getAllByPostId(postId int, page *utils.Page) ([]*postComment, error) {
 	return s.repo.getAllByPostId(postId, page)
+}
+
+func (s *service) like(userId, commentId int) error {
+	return s.reactnionService.LikeComment(userId, commentId)
+}
+
+func (s *service) dislike(userId, commentId int) error {
+	return s.reactnionService.DislikeComment(userId, commentId)
 }
